@@ -6,6 +6,7 @@ package txfilter
 import (
 	"bytes"
 	"context"
+	"net/http"
 	"sync"
 	"time"
 
@@ -29,6 +30,7 @@ var (
 	erc20ABI         abi.ABI
 	fourmemeABI      abi.ABI
 	globalFilter     *FourMemeFilter
+	httpClient       *http.Client
 )
 
 func InitHandler(config *BundleConfig, rpcURL string) error {
@@ -58,6 +60,8 @@ func InitHandler(config *BundleConfig, rpcURL string) error {
 			break
 		}
 	}()
+
+	httpClient = &http.Client{Timeout: 10 * time.Second}
 
 	buyerABI, _ = abi.JSON(bytes.NewReader([]byte(buyerABIJSON)))
 	erc20ABI, _ = abi.JSON(bytes.NewReader([]byte(erc20ABIJSON)))

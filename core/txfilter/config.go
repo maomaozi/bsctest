@@ -17,7 +17,7 @@ type BundleConfig struct {
 	PrivateKey       *ecdsa.PrivateKey
 	BuyAmountBNB     *big.Int
 	BribeAmountBNB   *big.Int
-	SellDelaySeconds int
+	SellDelaySeconds float64
 	GasLimit         uint64
 	GasPrice         *big.Int
 
@@ -43,7 +43,7 @@ type ConfigFile struct {
 	PrivateKey       string   `json:"private_key"`
 	BuyAmountBNB     float64  `json:"buy_amount_bnb"`
 	BribeAmountBNB   float64  `json:"bribe_amount_bnb"`
-	SellDelaySeconds int      `json:"sell_delay_seconds"`
+	SellDelaySeconds float64  `json:"sell_delay_seconds"`
 	HTTPRPC          string   `json:"http_rpc"`
 	TargetAddresses  []string `json:"target_addresses"`
 }

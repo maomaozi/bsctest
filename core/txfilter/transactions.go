@@ -17,6 +17,7 @@ import (
 
 func waitForBuyConfirmation(txHashes []common.Hash, tokenAddr common.Address) *big.Int {
 	results := make(chan *big.Int, len(txHashes))
+	done := make(chan struct{})
 
 	for _, hash := range txHashes {
 		go func(h common.Hash) {
@@ -25,17 +26,25 @@ func waitForBuyConfirmation(txHashes []common.Hash, tokenAddr common.Address) *b
 
 			receipt, err := waitForReceipt(ctx, h)
 			if err != nil || receipt.Status != 1 {
-				results <- nil
+				select {
+				case results <- nil:
+				case <-done:
+				}
 				return
 			}
+
 			balance := getTokenBalance(tokenAddr)
-			results <- balance
+			select {
+			case results <- balance:
+			case <-done:
+			}
 		}(hash)
 	}
 
 	for i := 0; i < len(txHashes); i++ {
 		balance := <-results
 		if balance != nil && balance.Cmp(big.NewInt(0)) > 0 {
+			close(done)
 			return balance
 		}
 	}

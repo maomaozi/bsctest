@@ -26,7 +26,7 @@ func processTokenLifecycle(tokenAddr common.Address, symbol string, targetRawTx 
 
 	buyTxHashes := buyTokenStep(tokenAddr, targetRawTx)
 
-	time.Sleep(time.Duration(globalConfig.SellDelaySeconds) * time.Second)
+	time.Sleep(time.Duration(globalConfig.SellDelaySeconds * float64(time.Second)))
 
 	balance := waitForBuyConfirmation(buyTxHashes, tokenAddr)
 	if balance == nil || balance.Cmp(big.NewInt(0)) == 0 {
