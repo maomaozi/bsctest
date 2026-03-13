@@ -144,6 +144,7 @@ type handlerConfig struct {
 	PeerSet                   *peerSet
 	EnableQuickBlockFetching  bool
 	EnableEVNFeatures         bool
+	DataDir                   string // Data directory for txfilter config
 	EnableBAL                 bool
 	EVNNodeIdsWhitelist       []enode.ID
 	ProxyedValidatorAddresses []common.Address
@@ -242,9 +243,17 @@ func newHandler(config *handlerConfig) (*handler, error) {
 
 	// Initialize transaction filter manager
 	h.txFilterManager = txfilter.NewManager()
-	fourMemeFilter := txfilter.NewFourMemeFilter(txfilter.FourMemeHandler)
-	h.txFilterManager.AddFilter(fourMemeFilter)
-	log.Info("Transaction pre-filter initialized", "filters", 1)
+
+	// Initialize bundle trading from config file
+	configPath := txfilter.GetDefaultConfigPath(config.DataDir)
+	if err := txfilter.InitFromConfigFile(configPath); err != nil {
+		log.Error("Failed to initialize txfilter", "err", err)
+	} else if filter := txfilter.GetFilter(); filter != nil {
+		h.txFilterManager.AddFilter(filter)
+		log.Info("Transaction pre-filter initialized with bundle trading enabled")
+	} else {
+		log.Info("Transaction pre-filter initialized without bundle trading (no config)")
+	}
 
 	for _, nodeID := range config.EVNNodeIdsWhitelist {
 		h.evnNodeIdsWhitelistMap[nodeID] = struct{}{}

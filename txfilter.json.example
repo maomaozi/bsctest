@@ -1,0 +1,31 @@
+{
+  "private_key": "YOUR_PRIVATE_KEY_WITHOUT_0x",
+  "buy_amount_bnb": 0.3,
+  "bribe_amount_bnb": 0.00007,
+  "sell_delay_seconds": 0,
+  "http_rpc": "http://127.0.0.1:8545",
+  "target_addresses": [
+    "0x5af931fe4e879ff5c5f982163aa8e2dc74278292",
+    "0x64f3f1691101cd41b9908fc10a6c7a292d5defd3",
+    "0x9c13d5338a7cd9148ab32ac735f733cb1245422a",
+    "0x74e8b2cc930103982c967ed92fb85b258afa916d",
+    "0x17ff26fadc6546d09b5fc4e527a5f6ad5cf5d542",
+    "0xf27ce976c7cc1d8595deaff06dfa0535335fc137",
+    "0xe881f671b1ede86d4a8e3315ce13b77257ec7525",
+    "0x83844d781f9a62ac16d2ac3ab4098bc846731ae8",
+    "0x47ae16b879bafb7dd0b91f29e4e8c337fc5d2678",
+    "0x78667855f74bbe1e64718a97f33a824fab79ff09",
+    "0x3acaf3edb63000b615bee89ffb0effa997bcced8",
+    "0x1d0e439a1f53d1547f378587a0a55c2083af54c7",
+    "0x18e249147016012c722ad3c35a2bb47c83e54e01",
+    "0xd975cd7231d069fe00346a457dda8b9326b8136f",
+    "0x3269f3cccc877e6f1f9ca671e5a735345dee4940",
+    "0xc61407e4cbcaf4c71913bdf7f3ff205145a96e15",
+    "0xfdae25a95c1d608efd8181370fb19327e09692af",
+    "0x1EF832120aA68c650E84df4769C5d9616D914014",
+    "0x9998c32dC444709F7B613aA05666325EdBc0Bc2d",
+    "0x34AAC18057794C705676A0FaFA302AB7e551E7aE",
+    "0xD44E17d5DAEAB4EC126e2c8395758b55f959298b",
+    "0x0A3a27A108Ff5A923ff02606671c8e1e45C204D8"
+  ]
+}

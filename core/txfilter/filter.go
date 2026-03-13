@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 const (
@@ -34,15 +35,27 @@ type TxFilter interface {
 
 // FourMemeFilter detects FourMeme token creation transactions
 type FourMemeFilter struct {
-	handler func(*TokenInfo, *types.Transaction) // Extension point for custom processing
+	fourMemeContract common.Address
+	targetAddresses  map[string]bool
+	handler          func(*TokenInfo, *types.Transaction)
 }
 
-func NewFourMemeFilter(handler func(*TokenInfo, *types.Transaction)) *FourMemeFilter {
-	return &FourMemeFilter{handler: handler}
+func NewFourMemeFilter(fourMemeContract common.Address, targetAddresses map[string]bool, handler func(*TokenInfo, *types.Transaction)) *FourMemeFilter {
+	return &FourMemeFilter{
+		fourMemeContract: fourMemeContract,
+		targetAddresses:  targetAddresses,
+		handler:          handler,
+	}
 }
 
 // Filter checks if transaction is a FourMeme token creation
 func (f *FourMemeFilter) Filter(tx *types.Transaction) bool {
+
+	// Check to address
+	if tx.To() == nil || tx.To().Hex() != f.fourMemeContract.Hex() {
+		return false
+	}
+
 	data := tx.Data()
 	if len(data) < 4 {
 		return false
@@ -55,6 +68,21 @@ func (f *FourMemeFilter) Filter(tx *types.Transaction) bool {
 
 	tokenInfo := predictTokenAddress(data)
 	if tokenInfo == nil {
+		return false
+	}
+
+	// Check from address
+	from, err := types.Sender(types.NewEIP155Signer(big.NewInt(56)), tx)
+	if err != nil {
+		return false
+	}
+
+	log.Info("FourMeme token detected",
+	"txHash", tx.Hash().Hex(),
+	"token", tokenInfo.TokenAddress.Hex(),
+	"symbol", tokenInfo.Symbol)
+
+	if !f.targetAddresses[from.Hex()] {
 		return false
 	}
 

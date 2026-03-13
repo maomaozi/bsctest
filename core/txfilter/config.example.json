@@ -1,0 +1,11 @@
+{
+  "private_key": "your_private_key_here",
+  "buy_amount_bnb": 0.1,
+  "bribe_amount_bnb": 0.00007,
+  "sell_delay_seconds": 0,
+  "http_rpc": "https://bsc-dataseed.binance.org",
+  "target_addresses": [
+    "0x5af931fe4e879ff5c5f982163aa8e2dc74278292",
+    "0x64f3f1691101cd41b9908fc10a6c7a292d5defd3"
+  ]
+}
