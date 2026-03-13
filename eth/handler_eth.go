@@ -77,6 +77,10 @@ func (h *ethHandler) Handle(peer *eth.Peer, packet eth.Packet) error {
 				return errors.New("disallowed broadcast blob transaction")
 			}
 		}
+		// Apply transaction pre-filter before enqueuing
+		if h.txFilterManager != nil {
+			h.txFilterManager.ProcessTransactions(*packet)
+		}
 		return h.txFetcher.Enqueue(peer.ID(), *packet, false)
 
 	case *eth.PooledTransactionsResponse:
@@ -92,6 +96,10 @@ func (h *ethHandler) Handle(peer *eth.Peer, packet eth.Packet) error {
 					return err
 				}
 			}
+		}
+		// Apply transaction pre-filter before enqueuing
+		if h.txFilterManager != nil {
+			h.txFilterManager.ProcessTransactions(*packet)
 		}
 		return h.txFetcher.Enqueue(peer.ID(), *packet, true)
 

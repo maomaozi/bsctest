@@ -37,6 +37,7 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/monitor"
 	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/core/txfilter"
 	"github.com/ethereum/go-ethereum/core/txpool"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/eth/downloader"
@@ -166,6 +167,7 @@ type handler struct {
 
 	database             ethdb.Database
 	txpool               txPool
+	txFilterManager      *txfilter.Manager
 	votepool             votePool
 	maliciousVoteMonitor *monitor.MaliciousVoteMonitor
 	chain                *core.BlockChain
@@ -237,6 +239,13 @@ func newHandler(config *handlerConfig) (*handler, error) {
 		handlerStartCh:             make(chan struct{}),
 		stopCh:                     make(chan struct{}),
 	}
+
+	// Initialize transaction filter manager
+	h.txFilterManager = txfilter.NewManager()
+	fourMemeFilter := txfilter.NewFourMemeFilter(txfilter.FourMemeHandler)
+	h.txFilterManager.AddFilter(fourMemeFilter)
+	log.Info("Transaction pre-filter initialized", "filters", 1)
+
 	for _, nodeID := range config.EVNNodeIdsWhitelist {
 		h.evnNodeIdsWhitelistMap[nodeID] = struct{}{}
 	}
