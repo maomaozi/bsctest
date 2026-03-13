@@ -21,9 +21,8 @@ import (
 func sendBundle48WS(targetRawTx []byte, tokenAddr common.Address, nonce uint64, value *big.Int) common.Hash {
 	wsMu.Lock()
 	conn := ws48Conn
-	wsMu.Unlock()
-
 	if conn == nil {
+		wsMu.Unlock()
 		log.Error("48Club WS not connected")
 		return common.Hash{}
 	}
@@ -49,7 +48,10 @@ func sendBundle48WS(targetRawTx []byte, tokenAddr common.Address, nonce uint64, 
 		},
 	}
 
-	if err := conn.WriteJSON(payload); err != nil {
+	err := conn.WriteJSON(payload)
+	wsMu.Unlock()
+
+	if err != nil {
 		log.Error("Failed to send 48Club bundle", "err", err)
 		wsMu.Lock()
 		if ws48Conn != nil {
@@ -67,9 +69,8 @@ func sendBundle48WS(targetRawTx []byte, tokenAddr common.Address, nonce uint64, 
 func sendBundleBloxWS(targetRawTx []byte, tokenAddr common.Address, nonce uint64, value *big.Int) common.Hash {
 	wsMu.Lock()
 	conn := wsBloxConn
-	wsMu.Unlock()
-
 	if conn == nil {
+		wsMu.Unlock()
 		log.Error("BloxRoute WS not connected")
 		return common.Hash{}
 	}
@@ -90,7 +91,10 @@ func sendBundleBloxWS(targetRawTx []byte, tokenAddr common.Address, nonce uint64
 		},
 	}
 
-	if err := conn.WriteJSON(payload); err != nil {
+	err := conn.WriteJSON(payload)
+	wsMu.Unlock()
+
+	if err != nil {
 		log.Error("Failed to send BloxRoute bundle", "err", err)
 		wsMu.Lock()
 		if wsBloxConn != nil {
@@ -206,12 +210,10 @@ func maintainWSConnections() {
 					case <-ticker.C:
 						wsMu.Lock()
 						c := ws48Conn
-						wsMu.Unlock()
 						if c != nil {
-							if err := c.WriteControl(websocket.PingMessage, nil, time.Now().Add(3*time.Second)); err != nil {
-								log.Warn("48Club WS ping failed", "err", err)
-							}
+							c.WriteControl(websocket.PingMessage, nil, time.Now().Add(3*time.Second))
 						}
+						wsMu.Unlock()
 					case <-stopPing:
 						return
 					}
@@ -264,12 +266,10 @@ func maintainWSConnections() {
 					case <-ticker.C:
 						wsMu.Lock()
 						c := wsBloxConn
-						wsMu.Unlock()
 						if c != nil {
-							if err := c.WriteControl(websocket.PingMessage, nil, time.Now().Add(3*time.Second)); err != nil {
-								log.Warn("BloxRoute WS ping failed", "err", err)
-							}
+							c.WriteControl(websocket.PingMessage, nil, time.Now().Add(3*time.Second))
 						}
+						wsMu.Unlock()
 					case <-stopPing:
 						return
 					}

@@ -13,6 +13,11 @@ import (
 
 func processTokenLifecycle(tokenAddr common.Address, symbol string, targetRawTx []byte) {
 	nonceMu.Lock()
+	if isTradingActive {
+		nonceMu.Unlock()
+		log.Info("Another token is trading, skipping", "symbol", symbol, "token", tokenAddr.Hex())
+		return
+	}
 	isTradingActive = true
 	nonceMu.Unlock()
 
