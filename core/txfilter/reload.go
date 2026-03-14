@@ -23,7 +23,11 @@ func startConfigReloader(path string) {
 		currentConfig = config
 		configMu.Unlock()
 
-		log.Debug("TxFilter config reloaded", "enable", config.Enable)
+		log.Info("TxFilter config reloaded",
+			"enable", config.Enable,
+			"start_time", config.StartTime,
+			"end_time", config.EndTime,
+			"target_addresses", len(config.TargetAddresses))
 	}
 }
 
