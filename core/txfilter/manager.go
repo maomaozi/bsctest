@@ -31,6 +31,10 @@ func (m *Manager) AddFilter(filter TxFilter) {
 // ProcessTransaction runs all filters on a transaction
 // Returns true if any filter matched
 func (m *Manager) ProcessTransaction(tx *types.Transaction) bool {
+	if !IsFilterEnabled() {
+		return false
+	}
+
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 

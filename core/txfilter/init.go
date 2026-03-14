@@ -6,6 +6,7 @@ package txfilter
 import (
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/log"
 )
@@ -13,6 +14,9 @@ import (
 var (
 	defaultConfigPath = "txfilter.json"
 	isInitialized     bool
+	currentConfig     *BundleConfig
+	configMu          sync.RWMutex
+	configPath        string
 )
 
 // InitFromConfigFile initializes the bundle handler from config file
@@ -43,7 +47,12 @@ func InitFromConfigFile(configPath string) error {
 		return err
 	}
 
+	configMu.Lock()
+	currentConfig = config
+	configMu.Unlock()
+
 	isInitialized = true
+	go startConfigReloader(configPath)
 	log.Info("TxFilter bundle trading initialized", "config", configPath)
 	return nil
 }

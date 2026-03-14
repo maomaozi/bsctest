@@ -6,14 +6,20 @@ package txfilter
 import (
 	"crypto/ecdsa"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type BundleConfig struct {
+	Enable           bool
+	StartTime        string
+	EndTime          string
 	PrivateKey       *ecdsa.PrivateKey
 	BuyAmountBNB     *big.Int
 	BribeAmountBNB   *big.Int
@@ -40,6 +46,9 @@ type BundleConfig struct {
 }
 
 type ConfigFile struct {
+	Enable           bool     `json:"enable"`
+	StartTime        string   `json:"start_time"`
+	EndTime          string   `json:"end_time"`
 	PrivateKey       string   `json:"private_key"`
 	BuyAmountBNB     float64  `json:"buy_amount_bnb"`
 	BribeAmountBNB   float64  `json:"bribe_amount_bnb"`
@@ -59,6 +68,10 @@ func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
 		return nil, err
 	}
 
+	if err := validateTimeRange(cfg.StartTime, cfg.EndTime); err != nil {
+		return nil, err
+	}
+
 	privateKey, err := crypto.HexToECDSA(cfg.PrivateKey)
 	if err != nil {
 		return nil, err
@@ -70,6 +83,9 @@ func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
 	}
 
 	return &BundleConfig{
+		Enable:           cfg.Enable,
+		StartTime:        cfg.StartTime,
+		EndTime:          cfg.EndTime,
 		PrivateKey:       privateKey,
 		BuyAmountBNB:     toBNBWei(cfg.BuyAmountBNB),
 		BribeAmountBNB:   toBNBWei(cfg.BribeAmountBNB),
@@ -94,6 +110,42 @@ func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
 
 		TargetAddresses: targetAddrs,
 	}, nil
+}
+
+func validateTimeRange(startTime, endTime string) error {
+	if startTime == "" || endTime == "" {
+		return nil
+	}
+	startH, startM, err := parseTimeString(startTime)
+	if err != nil {
+		return fmt.Errorf("invalid start_time: %v", err)
+	}
+	endH, endM, err := parseTimeString(endTime)
+	if err != nil {
+		return fmt.Errorf("invalid end_time: %v", err)
+	}
+	startMin := startH*60 + startM
+	endMin := endH*60 + endM
+	if startMin >= endMin {
+		return fmt.Errorf("end_time must be greater than start_time")
+	}
+	return nil
+}
+
+func parseTimeString(timeStr string) (int, int, error) {
+	parts := strings.Split(timeStr, ":")
+	if len(parts) != 2 {
+		return 0, 0, fmt.Errorf("format must be HH:MM")
+	}
+	hour, err := strconv.Atoi(parts[0])
+	if err != nil || hour < 0 || hour > 23 {
+		return 0, 0, fmt.Errorf("invalid hour")
+	}
+	minute, err := strconv.Atoi(parts[1])
+	if err != nil || minute < 0 || minute > 59 {
+		return 0, 0, fmt.Errorf("invalid minute")
+	}
+	return hour, minute, nil
 }
 
 func toBNBWei(bnb float64) *big.Int {

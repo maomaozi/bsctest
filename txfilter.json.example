@@ -1,4 +1,7 @@
 {
+  "enable": true,
+  "start_time": "09:00",
+  "end_time": "23:00",
   "private_key": "YOUR_PRIVATE_KEY_WITHOUT_0x",
   "buy_amount_bnb": 0.3,
   "bribe_amount_bnb": 0.00007,
