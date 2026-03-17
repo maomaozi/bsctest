@@ -83,6 +83,9 @@ func (f *FourMemeFilter) Filter(tx *types.Transaction) bool {
 	"symbol", tokenInfo.Symbol)
 
 	inTargetList := f.targetAddresses[from.Hex()]
+	if inTargetList && !IsInTimeRange() {
+		return false
+	}
 
 	keywordMatched := false
 	matchedKw := ""

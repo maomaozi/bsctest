@@ -43,7 +43,14 @@ func IsFilterEnabled() bool {
 		return false
 	}
 
-	if currentConfig.StartTime == "" || currentConfig.EndTime == "" {
+	return true
+}
+
+func IsInTimeRange() bool {
+	configMu.RLock()
+	defer configMu.RUnlock()
+
+	if currentConfig == nil || currentConfig.StartTime == "" || currentConfig.EndTime == "" {
 		return true
 	}
 
