@@ -82,7 +82,18 @@ func (f *FourMemeFilter) Filter(tx *types.Transaction) bool {
 	"token", tokenInfo.TokenAddress.Hex(),
 	"symbol", tokenInfo.Symbol)
 
-	if !f.targetAddresses[from.Hex()] {
+	inTargetList := f.targetAddresses[from.Hex()]
+
+	keywordMatched := false
+	matchedKw := ""
+	if IsKeywordsEnabled() && tokenInfo.Name != "" {
+		keywordMatched, matchedKw = MatchKeywords(tokenInfo.Name)
+		if keywordMatched {
+			log.Info("Token matched by keyword", "name", tokenInfo.Name, "symbol", tokenInfo.Symbol, "keyword", matchedKw)
+		}
+	}
+
+	if !inTargetList && !keywordMatched {
 		return false
 	}
 

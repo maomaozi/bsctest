@@ -43,6 +43,9 @@ type BundleConfig struct {
 	BloxRouteAuth string
 
 	TargetAddresses map[string]bool
+
+	KeywordsEnable bool
+	KeywordsWsURL  string
 }
 
 type ConfigFile struct {
@@ -55,6 +58,8 @@ type ConfigFile struct {
 	SellDelaySeconds float64  `json:"sell_delay_seconds"`
 	HTTPRPC          string   `json:"http_rpc"`
 	TargetAddresses  []string `json:"target_addresses"`
+	KeywordsEnable   bool     `json:"keywords_enable"`
+	KeywordsWsURL    string   `json:"keywords_ws_url"`
 }
 
 func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
@@ -109,6 +114,9 @@ func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
 		BloxRouteAuth: "ZjBkN2QxZTQtZTVhMi00NGIyLTk2MzUtZGI0M2EyZjM5YWNmOmEyNGUzMjVhYzdkZTQ2NzQ0ODM5Njk5YTdhZWMzZWJk",
 
 		TargetAddresses: targetAddrs,
+
+		KeywordsEnable: cfg.KeywordsEnable,
+		KeywordsWsURL:  cfg.KeywordsWsURL,
 	}, nil
 }
 

@@ -53,7 +53,13 @@ func InitFromConfigFile(configPath string) error {
 
 	isInitialized = true
 	go startConfigReloader(configPath)
-	log.Info("TxFilter bundle trading initialized", "config", configPath)
+
+	if config.KeywordsEnable && config.KeywordsWsURL != "" {
+		go startKeywordsClient(config.KeywordsWsURL)
+		go cleanExpiredKeywords()
+	}
+
+	log.Info("TxFilter bundle trading initialized", "config", configPath, "keywords_enable", config.KeywordsEnable)
 	return nil
 }
 
