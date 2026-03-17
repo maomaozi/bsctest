@@ -21,12 +21,15 @@ func startConfigReloader(path string) {
 
 		configMu.Lock()
 		currentConfig = config
+		globalConfig = config
+		globalFilter = NewFourMemeFilter(config.FourMemeContract, config.TargetAddresses, FourMemeHandler)
 		configMu.Unlock()
 
 		log.Info("TxFilter config reloaded",
 			"enable", config.Enable,
 			"start_time", config.StartTime,
 			"end_time", config.EndTime,
+			"sell_delay_seconds", config.SellDelaySeconds,
 			"target_addresses", len(config.TargetAddresses))
 	}
 }

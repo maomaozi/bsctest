@@ -11,13 +11,15 @@ import (
 
 // Manager coordinates multiple transaction filters
 type Manager struct {
-	filters []TxFilter
-	mu      sync.RWMutex
+	filters      []TxFilter
+	mu           sync.RWMutex
+	processedTxs map[string]bool
 }
 
 func NewManager() *Manager {
 	return &Manager{
-		filters: make([]TxFilter, 0),
+		filters:      make([]TxFilter, 0),
+		processedTxs: make(map[string]bool),
 	}
 }
 
@@ -35,8 +37,19 @@ func (m *Manager) ProcessTransaction(tx *types.Transaction) bool {
 		return false
 	}
 
-	m.mu.RLock()
-	defer m.mu.RUnlock()
+	txHash := tx.Hash().Hex()
+
+	m.mu.Lock()
+	if m.processedTxs[txHash] {
+		m.mu.Unlock()
+		return false
+	}
+	m.processedTxs[txHash] = true
+	if len(m.processedTxs) > 10000 {
+		m.processedTxs = make(map[string]bool)
+		m.processedTxs[txHash] = true
+	}
+	m.mu.Unlock()
 
 	matched := false
 	for _, filter := range m.filters {

@@ -85,7 +85,7 @@ func buyTokenStep(tokenAddr common.Address, targetRawTx []byte) []common.Hash {
 		case h := <-results:
 			hashes = append(hashes, h)
 		case <-timeout:
-			break
+			return hashes
 		}
 	}
 	return hashes
