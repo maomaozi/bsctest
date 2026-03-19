@@ -67,7 +67,7 @@ func InitHandler(config *BundleConfig, rpcURL string) error {
 	erc20ABI, _ = abi.JSON(bytes.NewReader([]byte(erc20ABIJSON)))
 	fourmemeABI, _ = abi.JSON(bytes.NewReader([]byte(fourmemeABIJSON)))
 
-	globalFilter = NewFourMemeFilter(config.FourMemeContract, config.TargetAddresses, FourMemeHandler)
+	globalFilter = NewFourMemeFilter(config.FourMemeContract, config.TargetAddresses, config.AddressesEnable, FourMemeHandler)
 
 	return nil
 }

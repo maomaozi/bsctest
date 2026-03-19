@@ -17,7 +17,7 @@ import (
 )
 
 type BundleConfig struct {
-	Enable           bool
+	AddressesEnable  bool
 	StartTime        string
 	EndTime          string
 	PrivateKey       *ecdsa.PrivateKey
@@ -49,7 +49,7 @@ type BundleConfig struct {
 }
 
 type ConfigFile struct {
-	Enable           bool     `json:"enable"`
+	AddressesEnable  bool     `json:"addresses_enable"`
 	StartTime        string   `json:"start_time"`
 	EndTime          string   `json:"end_time"`
 	PrivateKey       string   `json:"private_key"`
@@ -88,7 +88,7 @@ func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
 	}
 
 	return &BundleConfig{
-		Enable:           cfg.Enable,
+		AddressesEnable:  cfg.AddressesEnable,
 		StartTime:        cfg.StartTime,
 		EndTime:          cfg.EndTime,
 		PrivateKey:       privateKey,

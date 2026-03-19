@@ -31,7 +31,7 @@ func TestFourMemeFilter(t *testing.T) {
 		t.Logf("Token detected: %s", info.TokenAddress.Hex())
 	}
 
-	filter := NewFourMemeFilter(handler)
+	filter := NewFourMemeFilter(common.HexToAddress("0x1234567890123456789012345678901234567890"), nil, false, handler)
 	result := filter.Filter(tx)
 
 	if !result {
@@ -47,10 +47,8 @@ func TestFilterManager(t *testing.T) {
 		callCount++
 	}
 
-	filter := NewFourMemeFilter(handler)
+	filter := NewFourMemeFilter(common.Address{}, nil, false, handler)
 	manager.AddFilter(filter)
-
-	// Create test transaction
 	data, _ := hex.DecodeString("519ebb10")
 	tx := types.NewTransaction(0, common.Address{}, big.NewInt(0), 21000, big.NewInt(1), data)
 

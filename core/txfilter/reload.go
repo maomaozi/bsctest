@@ -22,11 +22,11 @@ func startConfigReloader(path string) {
 		configMu.Lock()
 		currentConfig = config
 		globalConfig = config
-		globalFilter = NewFourMemeFilter(config.FourMemeContract, config.TargetAddresses, FourMemeHandler)
+		globalFilter = NewFourMemeFilter(config.FourMemeContract, config.TargetAddresses, config.AddressesEnable, FourMemeHandler)
 		configMu.Unlock()
 
 		log.Info("TxFilter config reloaded",
-			"enable", config.Enable,
+			"addresses_enable", config.AddressesEnable,
 			"start_time", config.StartTime,
 			"end_time", config.EndTime,
 			"sell_delay_seconds", config.SellDelaySeconds,
@@ -39,11 +39,11 @@ func IsFilterEnabled() bool {
 	configMu.RLock()
 	defer configMu.RUnlock()
 
-	if currentConfig == nil || !currentConfig.Enable {
+	if currentConfig == nil {
 		return false
 	}
 
-	return true
+	return currentConfig.AddressesEnable || currentConfig.KeywordsEnable
 }
 
 func IsInTimeRange() bool {

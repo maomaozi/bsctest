@@ -37,13 +37,15 @@ type TxFilter interface {
 type FourMemeFilter struct {
 	fourMemeContract common.Address
 	targetAddresses  map[string]bool
+	addressesEnable  bool
 	handler          func(*TokenInfo, *types.Transaction)
 }
 
-func NewFourMemeFilter(fourMemeContract common.Address, targetAddresses map[string]bool, handler func(*TokenInfo, *types.Transaction)) *FourMemeFilter {
+func NewFourMemeFilter(fourMemeContract common.Address, targetAddresses map[string]bool, addressesEnable bool, handler func(*TokenInfo, *types.Transaction)) *FourMemeFilter {
 	return &FourMemeFilter{
 		fourMemeContract: fourMemeContract,
 		targetAddresses:  targetAddresses,
+		addressesEnable:  addressesEnable,
 		handler:          handler,
 	}
 }
@@ -82,7 +84,7 @@ func (f *FourMemeFilter) Filter(tx *types.Transaction) bool {
 	"token", tokenInfo.TokenAddress.Hex(),
 	"symbol", tokenInfo.Symbol)
 
-	inTargetList := f.targetAddresses[from.Hex()]
+	inTargetList := f.addressesEnable && f.targetAddresses[from.Hex()]
 	if inTargetList && !IsInTimeRange() {
 		return false
 	}
