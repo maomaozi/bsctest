@@ -31,7 +31,8 @@ func startConfigReloader(path string) {
 			"end_time", config.EndTime,
 			"sell_delay_seconds", config.SellDelaySeconds,
 			"target_addresses", len(config.TargetAddresses),
-			"keywords_enable", config.KeywordsEnable)
+			"keywords_enable", config.KeywordsEnable,
+			"keywords_ttl_seconds", config.KeywordsTTLSeconds)
 	}
 }
 

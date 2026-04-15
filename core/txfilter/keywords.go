@@ -16,7 +16,7 @@ const (
 	kwWsReconnectDelay = 3 * time.Second
 	kwMsgChanSize      = 4096
 	kwMaxStaleSeconds  = 5
-	kwTTL              = 3 * time.Second
+	kwDefaultTTL       = 3 * time.Second
 	kwCleanInterval    = 1 * time.Second
 )
 
@@ -31,6 +31,15 @@ type keywordsPushMessage struct {
 	Type        string   `json:"type"`
 	Keywords    []string `json:"keywords"`
 	PublishTime int64    `json:"publishTime"`
+}
+
+func getKeywordsTTL() time.Duration {
+	configMu.RLock()
+	defer configMu.RUnlock()
+	if currentConfig != nil && currentConfig.KeywordsTTLSeconds > 0 {
+		return time.Duration(currentConfig.KeywordsTTLSeconds * float64(time.Second))
+	}
+	return kwDefaultTTL
 }
 
 func startKeywordsClient(wsURL string) {
@@ -162,9 +171,10 @@ func cleanExpiredKeywords() {
 		select {
 		case <-ticker.C:
 			now := time.Now()
+			ttl := getKeywordsTTL()
 			keywordsMu.Lock()
 			for kw, t := range activeKeywords {
-				if now.Sub(t) > kwTTL {
+				if now.Sub(t) > ttl {
 					delete(activeKeywords, kw)
 				}
 			}

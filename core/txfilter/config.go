@@ -44,8 +44,9 @@ type BundleConfig struct {
 
 	TargetAddresses map[string]bool
 
-	KeywordsEnable bool
-	KeywordsWsURL  string
+	KeywordsEnable    bool
+	KeywordsWsURL     string
+	KeywordsTTLSeconds float64
 }
 
 type ConfigFile struct {
@@ -58,8 +59,9 @@ type ConfigFile struct {
 	SellDelaySeconds float64  `json:"sell_delay_seconds"`
 	HTTPRPC          string   `json:"http_rpc"`
 	TargetAddresses  []string `json:"target_addresses"`
-	KeywordsEnable   bool     `json:"keywords_enable"`
-	KeywordsWsURL    string   `json:"keywords_ws_url"`
+	KeywordsEnable     bool    `json:"keywords_enable"`
+	KeywordsWsURL      string  `json:"keywords_ws_url"`
+	KeywordsTTLSeconds float64 `json:"keywords_ttl_seconds"`
 }
 
 func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
@@ -115,8 +117,9 @@ func LoadConfigFromFile(configPath string) (*BundleConfig, error) {
 
 		TargetAddresses: targetAddrs,
 
-		KeywordsEnable: cfg.KeywordsEnable,
-		KeywordsWsURL:  cfg.KeywordsWsURL,
+		KeywordsEnable:    cfg.KeywordsEnable,
+		KeywordsWsURL:     cfg.KeywordsWsURL,
+		KeywordsTTLSeconds: cfg.KeywordsTTLSeconds,
 	}, nil
 }
 
